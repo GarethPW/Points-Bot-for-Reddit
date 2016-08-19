@@ -1,5 +1,5 @@
 '''
-    Reddit Points Bot v0.1.0
+    Reddit Points Bot v0.1.1
 
     Created by Reddit user, /u/GarethPW.
     Licensed under GNU General Public License v3.
@@ -36,7 +36,7 @@ def calc_votes(points,uppc):
 
 logging = True
 
-ver = "0.1.0"
+ver = "0.1.1"
 user_agent = platform.system().lower()+":net.garethpw.points:v"+ver+" (by /u/GarethPW)"
 
 footer = u'''
@@ -77,10 +77,11 @@ o = OAuth2Util.OAuth2Util(reddit)
 o.refresh(force=True)
 
 info("Initialisation successful.")
+flush_log()
 
-for comment in praw.helpers.comment_stream(reddit,"all"):
+for comment in praw.helpers.comment_stream(reddit,"all",limit=100):
     try:
-        cdata = re.match(ur"^!(?:(?:Point|Vote)s?|Score|kys)_?Bot(?: (updown|up|down)(?: (this|\w{2,8}))?)?\s*$",comment.body,re.IGNORECASE).groups()
+        cdata = re.match(ur"^!(?:(?:Point|Vote)s?|Score)_?Bot(?: (updown|up|down|kys)(?: (this|\w{2,8}))?)?\s*$",comment.body,re.IGNORECASE).groups()
     except AttributeError:
         pass
     else:
@@ -103,11 +104,14 @@ for comment in praw.helpers.comment_stream(reddit,"all"):
             except praw.errors.NotFound:
                 response = u"Sorry! It looks like that post doesn't exist."
             else:
-                stats = calc_votes(post.score,post.upvote_ratio)
-                
-                response = ( u"Here's my best estimate!\n"
-                            +((u"\n* "+unicode(stats['up'   ])+u" upvote"    +(u'' if stats['up'   ] == 1 else u's')) if u"up"     in rtype else u'')
-                            +((u"\n* "+unicode(stats['down' ])+u" downvote"  +(u'' if stats['down' ] == 1 else u's')) if u"down"   in rtype else u'')
-                            +((u"\n* "+unicode(stats['votes'])+u" total vote"+(u'' if stats['votes'] == 1 else u's')) if u"updown" == rtype else u''))
-                
-                comment.reply(response+footer)
+                if post.score <= 0 or post.upvote_ratio <= 0.5:
+                    response = u"Sorry! This post has too many downvotes to estimate vote counts."
+                else:
+                    stats = calc_votes(post.score,post.upvote_ratio)
+                    
+                    response = ( u"Here's my best estimate!\n"
+                                +((u"\n* "+unicode(stats['up'   ])+u" upvote"    +(u'' if stats['up'   ] == 1 else u's')) if u"up"     in rtype else u'')
+                                +((u"\n* "+unicode(stats['down' ])+u" downvote"  +(u'' if stats['down' ] == 1 else u's')) if u"down"   in rtype else u'')
+                                +((u"\n* "+unicode(stats['votes'])+u" total vote"+(u'' if stats['votes'] == 1 else u's')) if u"updown" == rtype else u''))
+                    
+        comment.reply(response+footer)
