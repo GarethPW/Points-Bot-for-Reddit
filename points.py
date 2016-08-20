@@ -1,5 +1,5 @@
 '''
-    Reddit Points Bot v0.1.1
+    Reddit Points Bot v0.1.2
 
     Created by Reddit user, /u/GarethPW.
     Licensed under GNU General Public License v3.
@@ -36,7 +36,7 @@ def calc_votes(points,uppc):
 
 logging = True
 
-ver = "0.1.1"
+ver = "0.1.2"
 user_agent = platform.system().lower()+":net.garethpw.points:v"+ver+" (by /u/GarethPW)"
 
 footer = u'''
@@ -44,7 +44,7 @@ footer = u'''
 ***
 
 *I am a bot and this message was sent automatically.*  
-[Subreddit](/r/Points_Bot) | [Creator](/u/GarethPW) | [GitHub](https://github.com/GarethPW/Reddit-Points-Bot)'''
+[Subreddit](/r/Points_Bot) | [Creator](https://www.reddit.com/user/GarethPW) | [GitHub](https://github.com/GarethPW/Reddit-Points-Bot)'''
 
 cdata = tuple()
 rtype = unicode()
